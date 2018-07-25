@@ -3,7 +3,6 @@
 import os
 import cv2
 import numpy as np 
-import matplotlib.image as mpimg
 
 IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
 INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
@@ -14,11 +13,9 @@ def load_image(data_dir, image_file):
     """
     Reads the image
     """
-    # return mpimg.imread(os.path.join(data_dir, image_file.strip()))
     img = cv2.imread(os.path.join(data_dir, image_file.strip()))
 
     if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_input.jpg", img)
-
     return img
 
 def choose_image(data_dir, center, left, right, steering_angle):
@@ -89,7 +86,6 @@ def random_shadow(image):
 
     if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", img)
     return img
-
 
 def random_brightness(image):
     """

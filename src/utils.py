@@ -8,12 +8,18 @@ import matplotlib.image as mpimg
 IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
 INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
 
+ENABLE_DEBUGGING = True
+
 def load_image(data_dir, image_file):
     """
     Reads the image
     """
-    #TODO: mpimg->cv2
-    return mpimg.imread(os.path.join(data_dir, image_file.strip()))
+    # return mpimg.imread(os.path.join(data_dir, image_file.strip()))
+    img = cv2.imread(os.path.join(data_dir, image_file.strip()))
+
+    if ENABLE_DEBUGGING* 0 : cv2.imwrite("./dbg_input.jpg", img)
+
+    return img
 
 def choose_image(data_dir, center, left, right, steering_angle):
     """
@@ -44,8 +50,10 @@ def random_translate(image, steering_angle, range_x, range_y):
     steering_angle += trans_x * 0.002
     trans_m = np.float32([[1,0,trans_x], [0,1,trans_y]])
     height, width = image.shape[:2]
-    image = cv2.warpAffine(image, trans_m, (width, height))
-    return image,steering_angle
+    img = cv2.warpAffine(image, trans_m, (width, height))
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_translate.jpg", img)
+
+    return img,steering_angle
 
 def random_shadow(image):
     """
@@ -69,7 +77,10 @@ def random_shadow(image):
     #adjust saturation in HLS //hue, light, sat
     hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
     hls[:,:,1][cond] = hls[:,:,1][cond]*s_ratio
-    return cv2.cvtColor(hls, cv2.COLOR_HLS2RGB)
+    img = cv2.cvtColor(hls, cv2.COLOR_HLS2RGB)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", img)
+    return img
+
 
 def random_brightness(image):
     """
@@ -77,25 +88,28 @@ def random_brightness(image):
     """
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     ratio = 1.0 + 0.4*(np.random.rand()-0.5)
-    hsv[:,:,2] = hsv[:,:,2]*ratio
-    return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    hsv[:,:,2] = np.minimum( hsv[:,:,2]*ratio, 255 )
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_brightness.jpg", img)
+    return img
 
 def augment(data_dir, center, left, right, steering_angle, range_x =100, range_y= 10):
     """
     Augment input data set with variations in the data.
 
-    # Called during classifier training phase
+    # Called during the training phase
     # Chooses random images out of three(center, left and right)
     # Apply geometrical transformations
     # Apply intensity variations
 
     """
-    image, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
-    image, steering_angle = random_flip(image, steering_angle)
-    image, steering_angle = random_translate(image, steering_angle, range_x, range_y)
-    image = random_shadow(image)
-    image = random_brightness(image)
-    return image, steering_angle
+    img, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
+    img, steering_angle = random_flip(img, steering_angle)
+    img, steering_angle = random_translate(img, steering_angle, range_x, range_y)
+    img = random_shadow(img)
+    img = random_brightness(img)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_augment.jpg", img)
+    return img, steering_angle
 
 def preprocess(image):
     """

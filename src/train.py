@@ -104,7 +104,7 @@ def build_model(args):
 
 def train_model(model, args, X_train, X_valid, y_train, y_valid):
     """
-    Trains the classifier 
+    Trains the model 
 
     I. Saves the model after every epoch.
     #monitor: quantity to monitor, 
@@ -143,6 +143,9 @@ def train_model(model, args, X_train, X_valid, y_train, y_valid):
                         verbose=1)
 
 def main():
+    """
+    Main function to train the model
+    """
     args = define_args()
     print_input_params(args)
     data = load_data(args)

@@ -140,7 +140,7 @@ def train_model(model, args, X_train, X_valid, y_train, y_valid):
                         validation_data=batch_generator(args.data_dir,X_valid,y_valid,args.batch_size,False),
                         nb_val_samples=len(X_valid),
                         callbacks=[checkpoint],
-                        verbose=0)
+                        verbose=1)
 
 def main():
     args = define_args()

@@ -10,18 +10,23 @@ Since this system takes steering angle decisions by detecting roads and lanes, I
 The system architecture is shown below. Inputs from the camera is processed in the end-to-end system and output steer angles are outputted to the vehicle CANs.
 ![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/inference-624x132.png)
 
-See the Nvidia self driving car on action:
+See the Nvidia self driving car in action:
 [![Nvidia End to End](https://cdn.onlinewebfonts.com/svg/img_60026.png)](https://www.youtube.com/watch?v=qhUvQiKec2U)
 
-#### The system architecture
+
+
+### The system architecture
 
 The training setup is as follow.
+
 ![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png)
 
 The layer architecutre of the network is as follow. 
 ![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png)
 
-#### Prototype development
+
+
+### Prototype development
 To develop a prototype of the AutoLaneAssist system, we may need a simulated environment - to read the instantaneous camera inputs and to take instantaneous actions. 
 
 

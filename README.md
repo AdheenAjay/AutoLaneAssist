@@ -6,8 +6,9 @@ Autonomous cars are expected to drive from a point to another all by itself. The
 
 Researchers in Nvidia developed an end-to-end deep learning system for self-driving cars. Their system reads camera images and outputs steering angle, there by they call it an end-to-end system. They designed a deep CNN network to understand the relation betwen camera images and steering angle.
 
+|The Nvidia research|
+|:--------:|
+|[![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/5Driver-closeup-hands-1200x675-624x351.png)](https://www.youtube.com/watch?v=qhUvQiKec2U)|
+
 #### The Network
 
-|Lake Track Test Run Video|
-|:--------:|
-|[![Lake Track](http://img.youtube.com/vi/MEBihons2IU/0.jpg)](https://youtu.be/MEBihons2IU)|

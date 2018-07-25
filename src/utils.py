@@ -17,7 +17,7 @@ def load_image(data_dir, image_file):
     # return mpimg.imread(os.path.join(data_dir, image_file.strip()))
     img = cv2.imread(os.path.join(data_dir, image_file.strip()))
 
-    if ENABLE_DEBUGGING* 0 : cv2.imwrite("./dbg_input.jpg", img)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_input.jpg", img)
 
     return img
 
@@ -61,23 +61,32 @@ def random_shadow(image):
     """
     #(x1, y1) and (x2,y2) forms a line
     #xm, ym gives all locations on the image
-    x1, y1 = IMAGE_WIDTH * np.random.rand(), 0
-    x2, y2 = IMAGE_WIDTH * np.random.rand(), IMAGE_HEIGHT
-    xm, ym = np.mgrid[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH]
+    (im_height, im_width) = image.shape[:2]
+    x1, y1 = (im_width * np.random.rand()), 0
+    x2, y2 = (im_width * np.random.rand()), im_height
+    xm, ym = np.mgrid[0:im_height, 0:im_width]
 
     mask = np.zeros_like(image[:,:,1])
     #set mask = 0 for all the pixels which are left/above to the line p1 and p2; else 1
-    mask[ (ym-y1)*(x2-x1) - (y2-y1)*(xm-x1) > 0] = 1
+    
+    #slope of the line p1-p2
+    m = (y2-y1)/((x2-x1)+0.0000001)
+    #y = mx + b and b = y - mx
+    b = y1 - (m * x1)
+    mask[ ym > ((m*xm) + b)] = 255
+    
+    if ENABLE_DEBUGGING* 1 : 
+        # cv2.line(mask, (int(x1),int(y1)), (int(x2),int(y2)), 127)
+        cv2.imwrite("./dbg_mask.jpg", mask)
     
     #choose which side should have shadow and adjust saturation
-    # cond = mask == np.random.randint(2)
-    cond = mask == np.random.choice(2)
+    cond = mask == [0, 255][np.random.choice(2)]
     s_ratio = np.random.uniform(low=0.2, high=0.5)
 
-    #adjust saturation in HLS //hue, light, sat
-    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
-    hls[:,:,1][cond] = hls[:,:,1][cond]*s_ratio
-    img = cv2.cvtColor(hls, cv2.COLOR_HLS2RGB)
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hsv[:,:,2][cond] = hsv[:,:,2][cond] * s_ratio
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
     if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", img)
     return img
 

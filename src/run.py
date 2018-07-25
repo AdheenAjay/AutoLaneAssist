@@ -4,6 +4,7 @@ import os
 import argparse
 import shutil
 import utils
+import cv2
 import numpy as np
 from datetime import datetime
 from keras.models import load_model
@@ -25,6 +26,21 @@ model = None #initialize model
 MAX_SPEED = 15
 MIN_SPEED = 10
 speed_limit = MAX_SPEED
+
+sw_img = None
+
+def displaySteerWheel(steerAngle):
+    global sw_img, sw_img_h, sw_img_w
+    if sw_img== None:
+        sw_img = cv2.imread('../assets/steerwheel.jpeg')
+        (sw_img_h, sw_img_w) = sw_img.shape[:2]
+        print (sw_img_h, sw_img_w)
+    else:
+        rot_angle = np.sign(steerAngle)*(steerAngle**2) * 60 
+        r_matrix = cv2.getRotationMatrix2D((sw_img.shape[1]/2, sw_img.shape[0]/2), rot_angle , 1)
+        sw_img_rot = cv2.warpAffine(sw_img, r_matrix, (sw_img_h, sw_img_w),borderValue=(255,255,255))
+        cv2.imshow("Steering Wheel", sw_img_rot)
+        cv2.waitKey(1)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -56,6 +72,8 @@ def telemetry(sid, data):
             throttle = 1.0 - steering_angle**2 - (speed/speed_limit)**2
             print('{} {} {}'.format(steering_angle, throttle, speed))
             send_control(steering_angle, throttle)
+
+            displaySteerWheel(steering_angle)
 
         except Exception as e:
             print(e)
@@ -92,11 +110,11 @@ if __name__ == '__main__':
     """
     Main funtion
     """
-    DEFAULT_MODEL = './model-005.h5'
+    DEFAULT_MODEL = './model-009.h5'
 
     parser = argparse.ArgumentParser(description='Automatic Driving')
-    parser.add_argument('model',        type = str, default='', help = 'Path to model h5 file. Model should be on the same path.')
-    parser.add_argument('image_folder', type=str,       nargs='?',  default='', help= 'Path to image folder. This is wher the images from the run will be saved.')
+    parser.add_argument('-m', dest='model',        type = str, nargs='?',   default='', help = 'Path to model h5 file. Model should be on the same path.')
+    parser.add_argument('-i', dest='image_folder', type=str,   nargs='?',   default='', help= 'Path to image folder. This is wher the images from the run will be saved.')
     args = parser.parse_args()
 
 
@@ -123,3 +141,5 @@ if __name__ == '__main__':
 
     #deploy as an eventlet WSGI server
     eventlet.wsgi.server(eventlet.listen(('', 4567)), app)
+
+    cv2.destroyAllWindows()

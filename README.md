@@ -7,22 +7,33 @@ Researchers in Nvidia developed an end-to-end deep learning system for self-driv
 
 Since this system takes steering angle decisions by detecting roads and lanes, I would like to call it 'AutoLaneAssist' than 'AutoPilot'. An AutoPilot is supposed to do advanced cruise controll along with lane assist
 
+
 The system architecture is shown below. Inputs from the camera is processed in the end-to-end system and output steer angles are outputted to the vehicle CANs.
-![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/inference-624x132.png)
+
+|How it works?|
+|:--------:|
+|![How it works?](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/inference-624x132.png)|
 
 See the Nvidia self driving car in action:
-[![Nvidia End to End](https://cdn.onlinewebfonts.com/svg/img_60026.png)](https://www.youtube.com/watch?v=qhUvQiKec2U)
-
+|Watch the video|
+|:--------:|
+|[![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/5Driver-closeup-hands-1200x675-624x351.png)](https://www.youtube.com/watch?v=qhUvQiKec2U)|
 
 
 ### The system architecture
 
 The training setup is as follow.
 
-![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png)
 
-The layer architecutre of the network is as follow. 
-![Nvidia End to End](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png)
+|The system|
+|:--------:|
+|![The system](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/training-624x291.png)|
+
+
+
+|The layer architecutre of the network|
+|:--------:|
+|![The layer architecutre of the network](https://devblogs.nvidia.com/parallelforall/wp-content/uploads/2016/08/cnn-architecture-624x890.png)|
 
 
 

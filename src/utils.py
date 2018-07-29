@@ -64,6 +64,7 @@ def random_shadow(image):
     xm, ym = np.mgrid[0:im_height, 0:im_width]
 
     mask = np.zeros_like(image[:,:,1])
+    dist = np.zeros_like(image[:,:,1])
     #set mask = 0 for all the pixels which are left/above to the line p1 and p2; else 1
     
     #slope of the line p1-p2
@@ -71,6 +72,8 @@ def random_shadow(image):
     #y = mx + b and b = y - mx
     b = y1 - (m * x1)
     mask[ ym > ((m*xm) + b)] = 255
+    # print (ym - ((m*xm) + b))
+    dist = ym - ((m*xm) + b)
     
     if ENABLE_DEBUGGING* 1 : 
         # cv2.line(mask, (int(x1),int(y1)), (int(x2),int(y2)), 127)
@@ -78,11 +81,11 @@ def random_shadow(image):
     
     #choose which side should have shadow and adjust saturation
     cond = mask == [0, 255][np.random.choice(2)]
-    s_ratio = np.random.uniform(low=0.2, high=0.5)
+    s_ratio = np.random.uniform(low=0.4, high=0.8)
 
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     hsv[:,:,2][cond] = hsv[:,:,2][cond] * s_ratio
-    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
     if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", img)
     return img
@@ -111,7 +114,7 @@ def augment(data_dir, center, left, right, steering_angle, range_x =100, range_y
     img, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
     img, steering_angle = random_flip(img, steering_angle)
     img, steering_angle = random_translate(img, steering_angle, range_x, range_y)
-    img = random_shadow(img)
+    # img = random_shadow(img)
     img = random_brightness(img)
     if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_augment.jpg", img)
     return img, steering_angle

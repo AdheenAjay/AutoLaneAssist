@@ -7,15 +7,15 @@ import numpy as np
 IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS = 66, 200, 3
 INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
 
-ENABLE_DEBUGGING = True
+ENABLE_DEBUGGING = False
 
 def load_image(data_dir, image_file):
     """
     Reads the image
     """
     img = cv2.imread(os.path.join(data_dir, image_file.strip()))
-
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_input.jpg", img)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_input.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     return img
 
 def choose_image(data_dir, center, left, right, steering_angle):
@@ -48,7 +48,7 @@ def random_translate(image, steering_angle, range_x, range_y):
     trans_m = np.float32([[1,0,trans_x], [0,1,trans_y]])
     height, width = image.shape[:2]
     img = cv2.warpAffine(image, trans_m, (width, height))
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_translate.jpg", img)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_translate.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
     return img,steering_angle
 
@@ -64,9 +64,8 @@ def random_shadow(image):
     xm, ym = np.mgrid[0:im_height, 0:im_width]
 
     mask = np.zeros_like(image[:,:,1])
-    dist = np.zeros_like(image[:,:,1])
-    #set mask = 0 for all the pixels which are left/above to the line p1 and p2; else 1
     
+    #set mask = 0 for all the pixels which are left/above to the line p1 and p2; else 1
     #slope of the line p1-p2
     m = (y2-y1)/((x2-x1)+0.0000001)
     #y = mx + b and b = y - mx
@@ -87,7 +86,7 @@ def random_shadow(image):
     hsv[:,:,2][cond] = hsv[:,:,2][cond] * s_ratio
     img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", img)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     return img
 
 def random_brightness(image):
@@ -98,7 +97,7 @@ def random_brightness(image):
     ratio = 1.0 + 0.4*(np.random.rand()-0.5)
     hsv[:,:,2] = np.minimum( hsv[:,:,2]*ratio, 255 )
     img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_brightness.jpg", img)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_brightness.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     return img
 
 def augment(data_dir, center, left, right, steering_angle, range_x =100, range_y= 10):
@@ -111,13 +110,13 @@ def augment(data_dir, center, left, right, steering_angle, range_x =100, range_y
     # Apply intensity variations
 
     """
-    img, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
-    img, steering_angle = random_flip(img, steering_angle)
-    img, steering_angle = random_translate(img, steering_angle, range_x, range_y)
-    # img = random_shadow(img)
-    img = random_brightness(img)
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_augment.jpg", img)
-    return img, steering_angle
+    image, steering_angle = choose_image(data_dir, center, left, right, steering_angle)
+    image, steering_angle = random_flip(image, steering_angle)
+    image, steering_angle = random_translate(image, steering_angle, range_x, range_y)
+    image = random_shadow(image)
+    image = random_brightness(image)
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_augment.jpg", image)
+    return image, steering_angle
 
 def preprocess(image):
     """
@@ -127,7 +126,7 @@ def preprocess(image):
     #Convert RBG to YUV color space
     """
     image = image[60:-25, : ,:] #crop out sky and car hood regions
-    image = cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT), cv2.INTER_CUBIC) #resize cropped image back to input size
+    image = cv2.resize(image, (IMAGE_WIDTH, IMAGE_HEIGHT), cv2.INTER_AREA) #resize cropped image back to input size
     image = cv2.cvtColor(image, cv2.COLOR_RGB2YUV) #Convert the image from RGB to YUV (This is what the NVIDIA model does)
     return image
 

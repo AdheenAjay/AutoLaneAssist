@@ -25,7 +25,7 @@ def define_args():
     parser.add_argument('-k', help='Drop out probability',  dest='keep_prob',     type=float,     default=0.5)
     parser.add_argument('-n', help='Number of epochs',      dest='nb_epoch',      type=int,       default=15)
     parser.add_argument('-s', help='Samples per epochs',    dest='samples_epoch', type=int,       default=20000)
-    parser.add_argument('-b', help='Batch size',            dest='batch_size',    type=int,       default=40)
+    parser.add_argument('-b', help='Batch size',            dest='batch_size',    type=int,       default=20)
     parser.add_argument('-o', help='Save best models only', dest='save_best_only',type=str,       default='true')
     parser.add_argument('-l', help='Learning rate',         dest='learning_rate', type=float,     default=1.0e-4)
     args = parser.parse_args()

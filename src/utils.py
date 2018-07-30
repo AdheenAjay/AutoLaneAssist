@@ -24,9 +24,9 @@ def choose_image(data_dir, center, left, right, steering_angle):
     """
     choice = np.random.choice(3)
     if choice==0:
-        return load_image(data_dir, left), steering_angle + 0.2
+        return load_image(data_dir, left), steering_angle + 0.1
     elif choice==1:
-        return load_image(data_dir, right), steering_angle -0.2
+        return load_image(data_dir, right), steering_angle -0.1
     return load_image(data_dir, center), steering_angle
 
 def random_flip(image, steering_angle):
@@ -48,7 +48,7 @@ def random_translate(image, steering_angle, range_x, range_y):
     trans_m = np.float32([[1,0,trans_x], [0,1,trans_y]])
     height, width = image.shape[:2]
     img = cv2.warpAffine(image, trans_m, (width, height))
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_translate.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_translate.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
 
     return img,steering_angle
 
@@ -80,13 +80,13 @@ def random_shadow(image):
     
     #choose which side should have shadow and adjust saturation
     cond = mask == [0, 255][np.random.choice(2)]
-    s_ratio = np.random.uniform(low=0.4, high=0.8)
+    s_ratio = np.random.uniform(low=0.2, high=0.7)
 
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
     hsv[:,:,2][cond] = hsv[:,:,2][cond] * s_ratio
     img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_shadow.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     return img
 
 def random_brightness(image):
@@ -94,10 +94,10 @@ def random_brightness(image):
     Apply random brighness variations 
     """
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    ratio = 1.0 + 0.4*(np.random.rand()-0.5)
+    ratio = 1.0 + 0.8*(np.random.rand()-0.5)
     hsv[:,:,2] = np.minimum( hsv[:,:,2]*ratio, 255 )
     img = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_brightness.jpg", cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    if ENABLE_DEBUGGING* 1 : cv2.imwrite("./dbg_brightness.jpg", cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
     return img
 
 def augment(data_dir, center, left, right, steering_angle, range_x =100, range_y= 10):

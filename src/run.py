@@ -23,8 +23,8 @@ app = Flask(__name__) #our flask app
 
 model = None #initialize model
 
-MAX_SPEED = 20
-MIN_SPEED = 18
+MAX_SPEED = 15
+MIN_SPEED = 10
 speed_limit = MAX_SPEED
 
 sw_img = None

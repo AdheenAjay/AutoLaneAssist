@@ -23,8 +23,8 @@ app = Flask(__name__) #our flask app
 
 model = None #initialize model
 
-MAX_SPEED = 15
-MIN_SPEED = 10
+MAX_SPEED = 20
+MIN_SPEED = 18
 speed_limit = MAX_SPEED
 
 sw_img = None
@@ -36,11 +36,19 @@ def displaySteerWheel(steerAngle):
         (sw_img_h, sw_img_w) = sw_img.shape[:2]
         print (sw_img_h, sw_img_w)
     else:
-        rot_angle = np.sign(steerAngle)*(steerAngle**2) * 60 
+        rot_angle = np.sign(steerAngle)*(steerAngle**2) * -1000.0 
         r_matrix = cv2.getRotationMatrix2D((sw_img.shape[1]/2, sw_img.shape[0]/2), rot_angle , 1)
         sw_img_rot = cv2.warpAffine(sw_img, r_matrix, (sw_img_h, sw_img_w),borderValue=(255,255,255))
         cv2.imshow("Steering Wheel", sw_img_rot)
         cv2.waitKey(1)
+
+def displayInputVideo(img):
+    win_name = "Vehicle Front View"
+    cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    cv2.imshow(win_name, img)
+    cv2.waitKey(1)
+
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -53,11 +61,13 @@ def telemetry(sid, data):
         speed           = float(data["speed"])
         # throttle        = float(data["throttle"])
         image           = Image.open(BytesIO(base64.b64decode(data["image"])))
+        
 
         try:
-            image = np.asarray(image)       #from PIL Image format to np array
-            image = utils.preprocess(image) #input preprocessing
-            image = np.array([image])       #the model expects 4D array
+            image       = np.asarray(image)       #from PIL Image format to np array
+            image_disp  = image.copy()
+            image       = utils.preprocess(image) #input preprocessing
+            image       = np.array([image])       #the model expects 4D array
 
             #predict steer angle
             steering_angle = float(model.predict(image, batch_size=1))
@@ -74,6 +84,7 @@ def telemetry(sid, data):
             send_control(steering_angle, throttle)
 
             displaySteerWheel(steering_angle)
+            displayInputVideo(image_disp)
 
         except Exception as e:
             print(e)
@@ -110,7 +121,7 @@ if __name__ == '__main__':
     """
     Main funtion
     """
-    DEFAULT_MODEL = './model-009.h5'
+    DEFAULT_MODEL = './model-000.h5'
 
     parser = argparse.ArgumentParser(description='Automatic Driving')
     parser.add_argument('-m', dest='model',        type = str, nargs='?',   default='', help = 'Path to model h5 file. Model should be on the same path.')

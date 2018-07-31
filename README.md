@@ -37,8 +37,8 @@ The training setup is as follow.
 
 
 
-### Prototype development
-To develop a prototype of the AutoLaneAssist system, we may need a simulated environment - to read the instantaneous camera inputs and to take instantaneous actions. 
+<!-- ### Prototype development
+To develop a prototype of the AutoLaneAssist system, we may need a simulated environment - to read the instantaneous camera inputs and to take instantaneous actions.  -->
 
 
 <!-- The steps of this project are the following:
